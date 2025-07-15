@@ -36,6 +36,17 @@ export default function AuthLayout({
           MindSpring
         </Link>
         {children}
+        <div className="text-balance text-center text-xs text-muted-foreground">
+          By clicking continue, you agree to our{" "}
+          <span className="hover:text-primary hover:underline">
+            Terms of Service
+          </span>{" "}
+          and{" "}
+          <span className="hover:text-primary hover:underline">
+            Privacy Policy
+          </span>
+          .
+        </div>
       </div>
     </div>
   );
