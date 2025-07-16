@@ -2,7 +2,6 @@
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 interface Feature {
   title: string;
@@ -37,7 +36,6 @@ const features: Feature[] = [
 ];
 
 export default function Home() {
-  const { data: session } = authClient.useSession();
   return (
     <>
       <section className="relative py-20">
