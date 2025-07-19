@@ -27,32 +27,30 @@ export const courseCategories = [
 export const courseSchema = z.object({
   title: z
     .string()
-    .min(2, { message: "Title must be at least 2 characters long" })
+    .min(2, { error: "Title must be at least 2 characters long" })
     .max(100),
   description: z
     .string()
-    .min(10, { message: "Description must be at least 10 characters long" })
-    .max(2500, { message: "Description must be at most 2500 characters long" }),
+    .min(10, { error: "Description must be at least 10 characters long" })
+    .max(2500, { error: "Description must be at most 2500 characters long" }),
   smallDescription: z
     .string()
     .min(10, {
-      message: "Small description must be at least 10 characters long",
+      error: "Small description must be at least 10 characters long",
     })
     .max(250, {
-      message: "Small description must be at most 250 characters long",
+      error: "Small description must be at most 250 characters long",
     }),
-  fileKey: z.string().min(1, { message: "File key is required" }),
-  price: z.coerce.number().min(1, { message: "Price must be positive" }),
+  fileKey: z.string().min(1, { error: "File key is required" }),
+  price: z.coerce.number<number>().min(1, { error: "Price must be positive" }),
   duration: z.coerce
-    .number()
-    .min(1, { message: "Duration must be at least 1" })
-    .max(500, { message: "Duration must be at most 500" }),
-  level: z.enum(courseLevel, { message: "Level is required" }),
+    .number<number>()
+    .min(1, { error: "Duration must be at least 1" })
+    .max(500, { error: "Duration must be at most 500" }),
+  level: z.enum(courseLevel, { error: "Level is required" }),
   category: z.enum(courseCategories, {
-    message: "Category is required",
+    error: "Category is required",
   }),
-  slug: z
-    .string()
-    .min(3, { message: "Slug must be at least 3 characters long" }),
-  status: z.enum(courseStatus, { message: "Status is required" }),
+  slug: z.string().min(3, { error: "Slug must be at least 3 characters long" }),
+  status: z.enum(courseStatus, { error: "Status is required" }),
 });

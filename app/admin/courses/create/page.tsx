@@ -35,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 export default function CreateCoursePage() {
   const form = useForm({
     resolver: zodResolver(courseSchema),
@@ -45,10 +46,10 @@ export default function CreateCoursePage() {
       fileKey: "",
       price: 0,
       duration: 0,
-      level: "BEGINNER",
-      category: "Design",
+      level: courseLevel[0],
+      category: courseCategories[0],
       slug: "",
-      status: "DRAFT",
+      status: courseStatus[0],
     },
   });
   const onSubmit = (data: any) => {

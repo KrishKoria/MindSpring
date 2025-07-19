@@ -16,10 +16,10 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useTransition } from "react";
+import { Suspense, useState, useTransition } from "react";
 import { toast } from "sonner";
 
-export default function VerifyEmailPage() {
+function VerifyEmail() {
   const [otp, setOtp] = useState("");
   const [verifyOtp, startVerifyOtp] = useTransition();
   const params = useSearchParams();
@@ -94,5 +94,12 @@ export default function VerifyEmailPage() {
         </Button>
       </CardContent>
     </Card>
+  );
+}
+export function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<Loader2 className="size-6 animate-spin" />}>
+      <VerifyEmail />
+    </Suspense>
   );
 }
