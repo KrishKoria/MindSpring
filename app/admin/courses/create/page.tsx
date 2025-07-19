@@ -1,5 +1,5 @@
 "use client";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,10 +7,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, PlusIcon, SparkleIcon } from "lucide-react";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { courseSchema } from "@/lib/schema";
+import {
+  courseCategories,
+  courseLevel,
+  courseSchema,
+  courseStatus,
+} from "@/lib/schema";
 import {
   Form,
   FormControl,
@@ -21,8 +26,15 @@ import {
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
+import slugify from "slugify";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 export default function CreateCoursePage() {
   const form = useForm({
     resolver: zodResolver(courseSchema),
@@ -34,7 +46,7 @@ export default function CreateCoursePage() {
       price: 0,
       duration: 0,
       level: "BEGINNER",
-      category: "",
+      category: "Design",
       slug: "",
       status: "DRAFT",
     },
@@ -65,7 +77,7 @@ export default function CreateCoursePage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form className="space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
+            <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
                 control={form.control}
                 name="title"
@@ -86,13 +98,13 @@ export default function CreateCoursePage() {
                   );
                 }}
               />
-              <div className="flex gap-4">
+              <div className="flex gap-4 items-end">
                 <FormField
                   control={form.control}
                   name="slug"
                   render={({ field }) => {
                     return (
-                      <FormItem>
+                      <FormItem className="w-full">
                         <FormLabel>Slug</FormLabel>
                         <FormControl>
                           <Input
@@ -107,19 +119,143 @@ export default function CreateCoursePage() {
                     );
                   }}
                 />
+                <Button
+                  type="button"
+                  className="w-fit"
+                  onClick={() => {
+                    const title = form.getValues("title");
+                    form.setValue("slug", slugify(title), {
+                      shouldValidate: true,
+                    });
+                  }}
+                >
+                  Generate Slug <SparkleIcon size={16} className="ml-1" />
+                </Button>
+              </div>
+              <FormField
+                control={form.control}
+                name="smallDescription"
+                render={({ field }) => {
+                  return (
+                    <FormItem className="w-full">
+                      <FormLabel>Small Description</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          placeholder="Small description of the course"
+                          className="min-h-[120px]"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => {
+                  return (
+                    <FormItem className="w-full">
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          placeholder="Description of the course"
+                          className="min-h-[120px]"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="fileKey"
+                render={({ field }) => {
+                  return (
+                    <FormItem className="w-full">
+                      <FormLabel>Thumbnail Image</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Thumbnail URL" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="smallDescription"
+                  name="category"
                   render={({ field }) => {
                     return (
-                      <FormItem>
-                        <FormLabel>Short Description</FormLabel>
+                      <FormItem className="w-full">
+                        <FormLabel>Category</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select a category" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {courseCategories.map((category) => (
+                              <SelectItem key={category} value={category}>
+                                {category}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="level"
+                  render={({ field }) => {
+                    return (
+                      <FormItem className="w-full">
+                        <FormLabel>LEVEL</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select a level" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {courseLevel.map((level) => (
+                              <SelectItem key={level} value={level}>
+                                {level}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="duration"
+                  render={({ field }) => {
+                    return (
+                      <FormItem className="w-full">
+                        <FormLabel>Duration</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            type="text"
-                            placeholder="Short description"
-                            className="input"
+                            type="number"
+                            placeholder="Duration"
                           />
                         </FormControl>
                         <FormMessage />
@@ -127,7 +263,54 @@ export default function CreateCoursePage() {
                     );
                   }}
                 />
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => {
+                    return (
+                      <FormItem className="w-full">
+                        <FormLabel>Price ($)</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="number" placeholder="Price" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
               </div>
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => {
+                  return (
+                    <FormItem className="w-full">
+                      <FormLabel>STATUS</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {courseStatus.map((status) => (
+                            <SelectItem key={status} value={status}>
+                              {status}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <Button>
+                Create Course <PlusIcon className="ml-1" size={16} />
+              </Button>
             </form>
           </Form>
         </CardContent>
