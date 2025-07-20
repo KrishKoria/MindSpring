@@ -35,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import RTEditor from "@/components/RTE/editor";
 
 export default function CreateCoursePage() {
   const form = useForm({
@@ -160,11 +161,7 @@ export default function CreateCoursePage() {
                     <FormItem className="w-full">
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="Description of the course"
-                          className="min-h-[120px]"
-                        />
+                        <RTEditor />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
