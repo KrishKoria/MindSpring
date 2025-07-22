@@ -2,7 +2,6 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Menubar from "./menubar";
 import TextAlign from "@tiptap/extension-text-align";
-import { BulletList, ListItem, OrderedList } from "@tiptap/extension-list";
 
 const RTEditor = ({ field }: { field: any }) => {
   const editor = useEditor({
@@ -11,9 +10,6 @@ const RTEditor = ({ field }: { field: any }) => {
       TextAlign.configure({
         types: ["heading", "paragraph"],
       }),
-      BulletList,
-      OrderedList,
-      ListItem,
     ],
     immediatelyRender: false,
     editorProps: {

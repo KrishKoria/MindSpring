@@ -36,6 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import RTEditor from "@/components/RTE/editor";
+import FileUploader from "@/components/file-upload/uploader";
 
 export default function CreateCoursePage() {
   const form = useForm({
@@ -176,7 +177,7 @@ export default function CreateCoursePage() {
                     <FormItem className="w-full">
                       <FormLabel>Thumbnail Image</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Thumbnail URL" />
+                        <FileUploader />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

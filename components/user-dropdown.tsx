@@ -48,7 +48,7 @@ export default function UserDropdown({
           />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="max-w-64 " align="end">
+      <DropdownMenuContent className="min-w-64" align="end">
         <DropdownMenuLabel className="flex min-w-0 flex-col">
           <span className="text-foreground truncate text-sm font-medium">
             {name}
