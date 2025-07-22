@@ -96,7 +96,7 @@ function VerifyEmail() {
     </Card>
   );
 }
-export function VerifyEmailPage() {
+export default function VerifyEmailPage() {
   return (
     <Suspense fallback={<Loader2 className="size-6 animate-spin" />}>
       <VerifyEmail />

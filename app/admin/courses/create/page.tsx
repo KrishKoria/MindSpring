@@ -161,7 +161,7 @@ export default function CreateCoursePage() {
                     <FormItem className="w-full">
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <RTEditor />
+                        <RTEditor field={field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
