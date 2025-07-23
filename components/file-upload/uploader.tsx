@@ -27,12 +27,86 @@ export default function FileUploader() {
     error: false,
     fileType: "image",
   });
-  const uploadFile = (file: File) => {
+  const uploadFile = async (file: File) => {
     setFileState((prev) => ({
       ...prev,
       uploading: true,
       progress: 0,
     }));
+    try {
+      const response = await fetch("/api/s3/upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fileName: file.name,
+          contentType: file.type,
+          size: file.size,
+          isImage: file.type.startsWith("image/"),
+        }),
+      });
+
+      if (!response.ok) {
+        toast.error("Failed to initiate file upload.");
+        setFileState((prev) => ({
+          ...prev,
+          uploading: false,
+          progress: 0,
+          error: true,
+        }));
+        return;
+      }
+
+      const { presignedUrl, uniqueKey } = await response.json();
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const percentComplete = Math.round(
+              (event.loaded * 100) / event.total
+            );
+            setFileState((prev) => ({
+              ...prev,
+              progress: percentComplete,
+            }));
+          }
+        };
+        xhr.onload = () => {
+          if (xhr.status === 200 || xhr.status === 204) {
+            setFileState((prev) => ({
+              ...prev,
+              uploading: false,
+              progress: 100,
+              key: uniqueKey,
+            }));
+            toast.success("File uploaded successfully!");
+            resolve();
+          } else {
+            setFileState((prev) => ({
+              ...prev,
+              uploading: false,
+              progress: 0,
+              error: true,
+            }));
+            toast.error("File upload failed. Please try again.");
+            reject(new Error("Upload failed"));
+          }
+        };
+        xhr.open("PUT", presignedUrl, true);
+        xhr.setRequestHeader("Content-Type", file.type);
+        xhr.send(file);
+      });
+    } catch (error) {
+      console.error("File upload failed:", error);
+      setFileState((prev) => ({
+        ...prev,
+        uploading: false,
+        progress: 0,
+        error: true,
+      }));
+      toast.error("File upload failed. Please try again.");
+    }
   };
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -48,6 +122,7 @@ export default function FileUploader() {
         objectUrl: URL.createObjectURL(file),
         fileType: file.type.startsWith("image/") ? "image" : "video",
       });
+      uploadFile(file);
     } else {
       toast.error("No files selected. Please select a file.");
     }

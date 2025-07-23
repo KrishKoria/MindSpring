@@ -16,6 +16,10 @@ export const env = createEnv({
     AWS_ENDPOINT_URL_IAM: z.string().min(1),
     AWS_REGION: z.string().min(1),
   },
-  client: {},
-  experimental__runtimeEnv: {},
+  client: {
+    NEXT_PUBLIC_S3_BUCKET_NAME: z.string().min(1),
+  },
+  experimental__runtimeEnv: {
+    NEXT_PUBLIC_S3_BUCKET_NAME: process.env.NEXT_PUBLIC_S3_BUCKET_NAME,
+  },
 });
