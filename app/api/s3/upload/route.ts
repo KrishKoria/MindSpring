@@ -5,8 +5,35 @@ import { v4 as uuidv4 } from "uuid";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { S3 } from "@/lib/s3client";
+import { aj, detectBot, fixedWindow } from "@/lib/arcjet";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+
+const protector = aj
+  .withRule(
+    detectBot({
+      mode: "LIVE",
+      allow: [],
+    })
+  )
+  .withRule(
+    fixedWindow({
+      mode: "LIVE",
+      window: "1m",
+      max: 5,
+    })
+  );
 export const POST = async (req: Request) => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
   try {
+    const isProtected = await protector.protect(req, {
+      fingerprint: session?.user?.id || "",
+    });
+    if (isProtected.isDenied()) {
+      return NextResponse.json({ error: "Request Denied" }, { status: 403 });
+    }
     const body = await req.json();
     const validation = fileUploadSchema.safeParse(body);
     if (!validation.success) {
