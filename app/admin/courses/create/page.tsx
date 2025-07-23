@@ -9,11 +9,10 @@ import {
 } from "@/components/ui/card";
 import { ArrowLeftIcon, PlusIcon, SparkleIcon } from "lucide-react";
 import Link from "next/link";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   courseCategories,
   courseLevel,
-  courseSchema,
+  CourseSchemaType,
   courseStatus,
 } from "@/lib/schema";
 import {
@@ -37,10 +36,16 @@ import {
 } from "@/components/ui/select";
 import RTEditor from "@/components/RTE/editor";
 import FileUploader from "@/components/file-upload/uploader";
+import { useTransition } from "react";
+import { tryCatch } from "@/hooks/try-catch";
+import { CreateCourse } from "@/lib/actions";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function CreateCoursePage() {
-  const form = useForm({
-    resolver: zodResolver(courseSchema),
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+  const form = useForm<CourseSchemaType>({
     defaultValues: {
       title: "",
       description: "",
@@ -54,8 +59,21 @@ export default function CreateCoursePage() {
       status: courseStatus[0],
     },
   });
-  const onSubmit = (data: any) => {
-    console.log("Form Data:", data);
+  const onSubmit = (data: CourseSchemaType) => {
+    startTransition(async () => {
+      const { data: courseData, error } = await tryCatch(CreateCourse(data));
+      if (error) {
+        toast.error("Failed to create course");
+        return;
+      }
+      if (courseData.status === "success") {
+        toast.success(courseData.message);
+        form.reset();
+        router.push("/admin/courses");
+      } else if (courseData.status === "error") {
+        toast.error(courseData.message);
+      }
+    });
   };
   return (
     <>
@@ -177,7 +195,10 @@ export default function CreateCoursePage() {
                     <FormItem className="w-full">
                       <FormLabel>Thumbnail Image</FormLabel>
                       <FormControl>
-                        <FileUploader />
+                        <FileUploader
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -307,8 +328,17 @@ export default function CreateCoursePage() {
                   );
                 }}
               />
-              <Button>
-                Create Course <PlusIcon className="ml-1" size={16} />
+              <Button type="submit" disabled={isPending} className="w-full">
+                {isPending ? (
+                  <>
+                    Creating Course...
+                    <PlusIcon className="ml-1 animate-spin" size={16} />
+                  </>
+                ) : (
+                  <>
+                    Create Course <PlusIcon className="ml-1" size={16} />
+                  </>
+                )}
               </Button>
             </form>
           </Form>

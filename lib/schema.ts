@@ -61,3 +61,5 @@ export const fileUploadSchema = z.object({
   size: z.number().min(1, { error: "File size must be positive" }),
   isImage: z.boolean().optional(),
 });
+
+export type CourseSchemaType = z.infer<typeof courseSchema>;

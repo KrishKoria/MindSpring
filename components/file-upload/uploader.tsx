@@ -24,7 +24,11 @@ interface UploadState {
   fileType: "image" | "video";
 }
 
-export default function FileUploader() {
+interface FileUploaderProps {
+  value?: string;
+  onChange?: (value: string) => void;
+}
+export default function FileUploader({ value, onChange }: FileUploaderProps) {
   const [fileState, setFileState] = useState<UploadState>({
     id: null,
     file: null,
@@ -33,6 +37,7 @@ export default function FileUploader() {
     isDeleting: false,
     error: false,
     fileType: "image",
+    key: value,
   });
   const uploadFile = async (file: File) => {
     setFileState((prev) => ({
@@ -88,6 +93,7 @@ export default function FileUploader() {
               key: uniqueKey,
             }));
             toast.success("File uploaded successfully!");
+            onChange?.(uniqueKey);
             resolve();
           } else {
             setFileState((prev) => ({
@@ -177,6 +183,7 @@ export default function FileUploader() {
         objectUrl: undefined,
         fileType: "image",
       });
+      onChange?.("");
       toast.success("File removed successfully!");
     } catch (error) {
       toast.error("Failed to remove file. Please try again.");
