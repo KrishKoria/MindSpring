@@ -1,4 +1,4 @@
-import aj from "@/lib/arcjet";
+import { aj } from "@/lib/arcjet";
 import { auth } from "@/lib/auth";
 import ip from "@arcjet/ip";
 import {
