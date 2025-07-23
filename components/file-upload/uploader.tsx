@@ -1,14 +1,56 @@
 "use client";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { Card, CardContent } from "../ui/card";
 import { cn } from "@/lib/utils";
 import { EmptyState, ErrorState } from "./render-state";
 import { toast } from "sonner";
-
+import { v4 as uuidv4 } from "uuid";
+interface UploadState {
+  id: string | null;
+  file: File | null;
+  uploading: boolean;
+  progress: number;
+  key?: string;
+  isDeleting: boolean;
+  error: boolean;
+  objectUrl?: string;
+  fileType: "image" | "video";
+}
 export default function FileUploader() {
+  const [fileState, setFileState] = useState<UploadState>({
+    id: null,
+    file: null,
+    uploading: false,
+    progress: 0,
+    isDeleting: false,
+    error: false,
+    fileType: "image",
+  });
+  const uploadFile = (file: File) => {
+    setFileState((prev) => ({
+      ...prev,
+      uploading: true,
+      progress: 0,
+    }));
+  };
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    console.log("Files dropped:", acceptedFiles);
+    if (acceptedFiles.length > 0) {
+      const file = acceptedFiles[0];
+      setFileState({
+        id: uuidv4(),
+        file: file,
+        uploading: false,
+        progress: 0,
+        isDeleting: false,
+        error: false,
+        objectUrl: URL.createObjectURL(file),
+        fileType: file.type.startsWith("image/") ? "image" : "video",
+      });
+    } else {
+      toast.error("No files selected. Please select a file.");
+    }
   }, []);
   const rejectedFiles = useCallback((fileRejections: FileRejection[]) => {
     if (fileRejections.length) {

@@ -54,3 +54,10 @@ export const courseSchema = z.object({
   slug: z.string().min(3, { error: "Slug must be at least 3 characters long" }),
   status: z.enum(courseStatus, { error: "Status is required" }),
 });
+
+export const fileUploadSchema = z.object({
+  fileName: z.string().min(1, { error: "File name is required" }),
+  contentType: z.string().min(1, { error: "Content type is required" }),
+  size: z.number().min(1, { error: "File size must be positive" }),
+  isImage: z.boolean().optional(),
+});
