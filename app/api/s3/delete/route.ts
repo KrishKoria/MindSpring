@@ -3,8 +3,7 @@ import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { env } from "@/lib/env";
 import { S3 } from "@/lib/s3client";
 import { aj, detectBot, fixedWindow } from "@/lib/arcjet";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import requireAdmin from "@/lib/data/admin/require-admin";
 
 const protector = aj
   .withRule(
@@ -21,9 +20,7 @@ const protector = aj
     })
   );
 export const DELETE = async (req: Request) => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await requireAdmin();
   try {
     const isProtected = await protector.protect(req, {
       fingerprint: session?.user?.id || "",

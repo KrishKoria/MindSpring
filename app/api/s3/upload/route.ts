@@ -6,8 +6,7 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { S3 } from "@/lib/s3client";
 import { aj, detectBot, fixedWindow } from "@/lib/arcjet";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import requireAdmin from "@/lib/data/admin/require-admin";
 
 const protector = aj
   .withRule(
@@ -24,9 +23,7 @@ const protector = aj
     })
   );
 export const POST = async (req: Request) => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await requireAdmin();
   try {
     const isProtected = await protector.protect(req, {
       fingerprint: session?.user?.id || "",
