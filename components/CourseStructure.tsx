@@ -28,10 +28,12 @@ import {
 import {
   ChevronDownIcon,
   ChevronRightIcon,
+  FileText,
   GripVerticalIcon,
   Trash2Icon,
 } from "lucide-react";
 import { Button } from "./ui/button";
+import Link from "next/link";
 interface CourseStructureProps {
   data: AdminCourseType;
 }
@@ -131,7 +133,7 @@ export default function CourseStructure({ data }: CourseStructureProps) {
                 data={{ type: "chapter" }}
               >
                 {(listeners) => (
-                  <Card {...listeners} className="p-4 border-b border-border">
+                  <Card className="p-4 border-b border-border">
                     <Collapsible
                       open={item.isOpen}
                       onOpenChange={() => toggleChapter(item.id)}
@@ -142,6 +144,9 @@ export default function CourseStructure({ data }: CourseStructureProps) {
                             size={"icon"}
                             variant={"ghost"}
                             {...listeners}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
                           >
                             <GripVerticalIcon className="size-4" />
                           </Button>
@@ -166,6 +171,57 @@ export default function CourseStructure({ data }: CourseStructureProps) {
                           <Trash2Icon className="size-4" />
                         </Button>
                       </div>
+                      <CollapsibleContent>
+                        <div className="p-1">
+                          <SortableContext
+                            items={item.lessons.map((lesson) => lesson.id)}
+                            strategy={verticalListSortingStrategy}
+                          >
+                            {item.lessons.map((lesson) => (
+                              <SortableItem
+                                key={lesson.id}
+                                id={lesson.id}
+                                data={{ type: "lesson", chapterId: item.id }}
+                              >
+                                {(lessonListeners) => (
+                                  <div className="flex items-center justify-between p-2 hover:bg-accent rounded-sm ">
+                                    <div className="flex items-center gap-2">
+                                      <Button
+                                        size={"icon"}
+                                        variant={"ghost"}
+                                        {...lessonListeners}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                        }}
+                                      >
+                                        <GripVerticalIcon className="size-4" />
+                                      </Button>
+                                      <FileText className="size-4 text-muted-foreground" />
+                                      <Link
+                                        href={`/admin/courses/${data.id}/${item.id}/${lesson.id}`}
+                                      >
+                                        {lesson.title}
+                                      </Link>
+                                    </div>
+                                    <Button size={"icon"} variant={"outline"}>
+                                      <Trash2Icon className="size-4" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </SortableItem>
+                            ))}
+                          </SortableContext>
+                          <div className="p-2">
+                            <Button
+                              variant="outline"
+                              className="w-full"
+                              onClick={() => {}}
+                            >
+                              Add New Lesson
+                            </Button>
+                          </div>
+                        </div>
+                      </CollapsibleContent>
                     </Collapsible>
                   </Card>
                 )}
