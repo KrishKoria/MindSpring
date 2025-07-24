@@ -1,3 +1,4 @@
+import CourseStructure from "@/components/CourseStructure";
 import EditCourseForm from "@/components/EditCourseForm";
 import {
   Card,
@@ -43,9 +44,12 @@ export default async function EditCourse({ params }: { params: Params }) {
           <Card>
             <CardHeader>
               <CardTitle>Edit Course Structure</CardTitle>
-              <CardDescription>
+              <CardDescription className="mb-2">
                 Edit the structure of the course.
               </CardDescription>
+              <CardContent>
+                <CourseStructure data={course} />
+              </CardContent>
             </CardHeader>
           </Card>
         </TabsContent>
