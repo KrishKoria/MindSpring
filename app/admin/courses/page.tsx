@@ -1,7 +1,17 @@
+import AdminCourseCard from "@/components/AdminCourseCard";
 import { buttonVariants } from "@/components/ui/button";
+import GetCourses from "@/lib/data/admin/get-courses";
 import Link from "next/link";
 
-export default function CoursesPage() {
+export default async function CoursesPage() {
+  const data = await GetCourses();
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="text-muted-foreground">No courses found.</p>
+      </div>
+    );
+  }
   return (
     <>
       <div className="flex items-center justify-between">
@@ -10,10 +20,10 @@ export default function CoursesPage() {
           Create Courses
         </Link>
       </div>
-      <div className="">
-        <p className="text-muted-foreground">
-          Here you can manage your courses. Click on a course to edit it.
-        </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-7">
+        {data.map((course) => (
+          <AdminCourseCard key={course.id} course={course} />
+        ))}
       </div>
     </>
   );
