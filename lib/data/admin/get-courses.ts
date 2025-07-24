@@ -22,4 +22,4 @@ export default async function GetCourses() {
   return courses;
 }
 
-export type AdminCourseType = Awaited<ReturnType<typeof GetCourses>>[0];
+export type AdminCoursesType = Awaited<ReturnType<typeof GetCourses>>[0];

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Card, CardContent } from "./ui/card";
-import { AdminCourseType } from "@/lib/data/admin/get-courses";
+import { AdminCoursesType } from "@/lib/data/admin/get-courses";
 import useConstructUrl from "@/hooks/use-construct-url";
 import Link from "next/link";
 import {
@@ -24,7 +24,7 @@ import {
 export default function AdminCourseCard({
   course,
 }: {
-  course: AdminCourseType;
+  course: AdminCoursesType;
 }) {
   return (
     <Card className="group relative py-0 gap-0">

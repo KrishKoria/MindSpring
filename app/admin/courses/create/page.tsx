@@ -12,6 +12,7 @@ import Link from "next/link";
 import {
   courseCategories,
   courseLevel,
+  courseSchema,
   CourseSchemaType,
   courseStatus,
 } from "@/lib/schema";
@@ -41,11 +42,12 @@ import { tryCatch } from "@/hooks/try-catch";
 import { CreateCourse } from "@/lib/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-
+import { zodResolver } from "@hookform/resolvers/zod";
 export default function CreateCoursePage() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const form = useForm<CourseSchemaType>({
+    resolver: zodResolver(courseSchema),
     defaultValues: {
       title: "",
       description: "",

@@ -60,3 +60,42 @@ export async function CreateCourse(
     };
   }
 }
+export async function EditCourse(
+  id: string,
+  values: CourseSchemaType
+): Promise<ApiResponse> {
+  const session = await requireAdmin();
+  try {
+    const req = await request();
+    const isProtected = await aj.protect(req, {
+      fingerprint: session.user.id,
+    });
+    if (isProtected.isDenied()) {
+      return {
+        status: "error",
+        message: "Request Denied",
+      };
+    }
+    const validation = courseSchema.safeParse(values);
+    if (!validation.success) {
+      return {
+        status: "error",
+        message: "Invalid Form data",
+      };
+    }
+    await prisma.course.update({
+      where: { id: id, userId: session.user.id },
+      data: { ...validation.data },
+    });
+
+    return {
+      status: "success",
+      message: "Course updated successfully",
+    };
+  } catch {
+    return {
+      status: "error",
+      message: "Failed to update course",
+    };
+  }
+}
