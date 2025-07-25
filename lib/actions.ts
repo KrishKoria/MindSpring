@@ -5,6 +5,7 @@ import { ApiResponse } from "./types";
 import requireAdmin from "./data/admin/require-admin";
 import { aj, detectBot, fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
+import { revalidatePath } from "next/cache";
 
 const protector = aj
   .withRule(
@@ -26,7 +27,7 @@ export async function CreateCourse(
   const session = await requireAdmin();
   try {
     const req = await request();
-    const isProtected = await aj.protect(req, {
+    const isProtected = await protector.protect(req, {
       fingerprint: session.user.id,
     });
     if (isProtected.isDenied()) {
@@ -67,7 +68,7 @@ export async function EditCourse(
   const session = await requireAdmin();
   try {
     const req = await request();
-    const isProtected = await aj.protect(req, {
+    const isProtected = await protector.protect(req, {
       fingerprint: session.user.id,
     });
     if (isProtected.isDenied()) {
@@ -96,6 +97,91 @@ export async function EditCourse(
     return {
       status: "error",
       message: "Failed to update course",
+    };
+  }
+}
+
+export async function reorderLessons(
+  chapterId: string,
+  lessonUpdates: { id: string; position: number }[],
+  courseId: string
+): Promise<ApiResponse> {
+  const session = await requireAdmin();
+  try {
+    const req = await request();
+    const isProtected = await protector.protect(req, {
+      fingerprint: session.user.id,
+    });
+    if (isProtected.isDenied()) {
+      return {
+        status: "error",
+        message: "Request Denied",
+      };
+    }
+    if (!lessonUpdates || lessonUpdates.length === 0) {
+      return {
+        status: "error",
+        message: "No lessons to reorder",
+      };
+    }
+    const updates = lessonUpdates.map((lesson) =>
+      prisma.lesson.update({
+        where: { id: lesson.id, chapterId: chapterId },
+        data: { position: lesson.position },
+      })
+    );
+    await prisma.$transaction(updates);
+    revalidatePath(`/admin/courses/${courseId}/edit`);
+    return {
+      status: "success",
+      message: "Lessons reordered successfully",
+    };
+  } catch {
+    return {
+      status: "error",
+      message: "Failed to reorder lessons",
+    };
+  }
+}
+
+export async function reorderChapters(
+  chapterUpdates: { id: string; position: number }[],
+  courseId: string
+): Promise<ApiResponse> {
+  const session = await requireAdmin();
+  try {
+    const req = await request();
+    const isProtected = await protector.protect(req, {
+      fingerprint: session.user.id,
+    });
+    if (isProtected.isDenied()) {
+      return {
+        status: "error",
+        message: "Request Denied",
+      };
+    }
+    if (!chapterUpdates || chapterUpdates.length === 0) {
+      return {
+        status: "error",
+        message: "No chapters to reorder",
+      };
+    }
+    const updates = chapterUpdates.map((chapter) =>
+      prisma.chapter.update({
+        where: { id: chapter.id, courseId: courseId },
+        data: { position: chapter.position },
+      })
+    );
+    await prisma.$transaction(updates);
+    revalidatePath(`/admin/courses/${courseId}/edit`);
+    return {
+      status: "success",
+      message: "Chapters reordered successfully",
+    };
+  } catch {
+    return {
+      status: "error",
+      message: "Failed to reorder chapters",
     };
   }
 }
