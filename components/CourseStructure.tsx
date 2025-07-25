@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { toast } from "sonner";
 interface CourseStructureProps {
   data: AdminCourseType;
 }
@@ -99,13 +100,81 @@ export default function CourseStructure({ data }: CourseStructureProps) {
   function handleDragEnd(event: any) {
     const { active, over } = event;
 
-    if (active.id !== over.id) {
-      setItems((items) => {
-        const oldIndex = items.indexOf(active.id);
-        const newIndex = items.indexOf(over.id);
+    if (!over || active.id === over.id) {
+      return;
+    }
+    const activeId = active.id;
+    const overId = over.id;
+    const activeType = active.data.current.type as "chapter" | "lesson";
+    const overType = over.data.current.type as "chapter" | "lesson";
+    const courseId = data.id;
+    if (activeType === "chapter") {
+      let targetChapterId = null;
+      if (overType === "chapter") {
+        targetChapterId = overId;
+      } else if (overType === "lesson") {
+        targetChapterId = over.data.current.chapterId ?? null;
+      }
+      if (!targetChapterId) {
+        toast.error("Invalid target chapter for drag and drop.");
+        return;
+      }
+      const oldIndex = items.findIndex((item) => item.id === activeId);
+      const newIndex = items.findIndex((item) => item.id === targetChapterId);
+      if (oldIndex === -1 || newIndex === -1) {
+        toast.error("Invalid chapter index for drag and drop.");
+        return;
+      }
+      const newItems = arrayMove(items, oldIndex, newIndex);
+      const updatedItems = newItems.map((item, index) => ({
+        ...item,
+        order: index + 1,
+      }));
+      const previousOrder = [...items];
+      setItems(updatedItems);
+    }
 
-        return arrayMove(items, oldIndex, newIndex);
-      });
+    if (activeType === "lesson" && overType === "lesson") {
+      const chapterId = active.data.current?.chapterId;
+      const overChapterId = over.data.current?.chapterId;
+      if (!chapterId || chapterId !== overChapterId) {
+        toast.error("Cannot Move Lessons between different Chapters");
+        return;
+      }
+
+      const chapterIndex = items.findIndex((item) => item.id === chapterId);
+      if (chapterIndex === -1) {
+        toast.error("Chapter Not Found");
+        return;
+      }
+      const chapterToUpdate = items[chapterIndex];
+      const oldLessonIdx = chapterToUpdate.lessons.findIndex(
+        (lesson) => lesson.id === activeId
+      );
+      const newLessonIdx = chapterToUpdate.lessons.findIndex(
+        (lesson) => lesson.id === overId
+      );
+      if (oldLessonIdx === -1 || newLessonIdx === -1) {
+        toast.error("Could not find lesson");
+        return;
+      }
+      const newLessons = arrayMove(
+        chapterToUpdate.lessons,
+        oldLessonIdx,
+        newLessonIdx
+      );
+      const updatedLessons = newLessons.map((item, index) => ({
+        ...item,
+        order: index + 1,
+      }));
+      const newItems = [...items];
+      newItems[chapterIndex] = {
+        ...chapterToUpdate,
+        lessons: updatedLessons,
+      };
+      const previousItems = [...items];
+
+      setItems(newItems);
     }
   }
   const sensors = useSensors(
@@ -124,7 +193,7 @@ export default function CourseStructure({ data }: CourseStructureProps) {
         <CardHeader className="flex flex-row items-center justify-between border-b border-border">
           <CardTitle>Chapters</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-8">
           <SortableContext strategy={verticalListSortingStrategy} items={items}>
             {items.map((item) => (
               <SortableItem
