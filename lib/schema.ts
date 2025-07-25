@@ -63,3 +63,10 @@ export const fileUploadSchema = z.object({
 });
 
 export type CourseSchemaType = z.infer<typeof courseSchema>;
+
+export const chapterSchema = z.object({
+  name: z.string().min(3, { error: "Name must be at least 3 characters long" }),
+  courseId: z.uuid({ error: "Invalid Course ID" }),
+});
+
+export type ChapterSchemaType = z.infer<typeof chapterSchema>;

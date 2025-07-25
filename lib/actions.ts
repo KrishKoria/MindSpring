@@ -1,6 +1,11 @@
 "use server";
 import prisma from "./db";
-import { courseSchema, CourseSchemaType } from "./schema";
+import {
+  chapterSchema,
+  ChapterSchemaType,
+  courseSchema,
+  CourseSchemaType,
+} from "./schema";
 import { ApiResponse } from "./types";
 import requireAdmin from "./data/admin/require-admin";
 import { aj, detectBot, fixedWindow } from "@/lib/arcjet";
@@ -182,6 +187,55 @@ export async function reorderChapters(
     return {
       status: "error",
       message: "Failed to reorder chapters",
+    };
+  }
+}
+
+export async function createChapter(
+  values: ChapterSchemaType
+): Promise<ApiResponse> {
+  const session = await requireAdmin();
+  try {
+    const req = await request();
+    const isProtected = await protector.protect(req, {
+      fingerprint: session.user.id,
+    });
+    if (isProtected.isDenied()) {
+      return {
+        status: "error",
+        message: "Request Denied",
+      };
+    }
+    const validation = chapterSchema.safeParse(values);
+    if (!validation.success) {
+      return {
+        status: "error",
+        message: "Invalid Form data",
+      };
+    }
+    await prisma.$transaction(async (tx) => {
+      const maxPos = await tx.chapter.findFirst({
+        where: { courseId: validation.data.courseId },
+        orderBy: { position: "desc" },
+        select: { position: true },
+      });
+      await tx.chapter.create({
+        data: {
+          title: validation.data.name,
+          courseId: validation.data.courseId,
+          position: (maxPos?.position ?? 0) + 1,
+        },
+      });
+    });
+    revalidatePath(`/admin/courses/${validation.data.courseId}/edit`);
+    return {
+      status: "success",
+      message: "Chapter created successfully",
+    };
+  } catch {
+    return {
+      status: "error",
+      message: "Failed to create chapter",
     };
   }
 }
