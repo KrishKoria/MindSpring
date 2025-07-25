@@ -37,8 +37,9 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { toast } from "sonner";
 import { reorderChapters, reorderLessons } from "@/lib/actions";
-import NewChapterModal from "./NewChapterModal";
-import NewLessonModal from "./NewLessonModal";
+import NewLessonModal from "./lessons/NewLessonModal";
+import NewChapterModal from "./chapters/NewChapterModal";
+import DeleteLesson from "./lessons/DeleteLesson";
 interface CourseStructureProps {
   data: AdminCourseType;
 }
@@ -339,9 +340,11 @@ export default function CourseStructure({ data }: CourseStructureProps) {
                                         {lesson.title}
                                       </Link>
                                     </div>
-                                    <Button size={"icon"} variant={"outline"}>
-                                      <Trash2Icon className="size-4" />
-                                    </Button>
+                                    <DeleteLesson
+                                      chapterId={item.id}
+                                      courseId={data.id}
+                                      lessonId={lesson.id}
+                                    />
                                   </div>
                                 )}
                               </SortableItem>
