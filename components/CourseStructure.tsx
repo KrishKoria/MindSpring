@@ -40,6 +40,7 @@ import { reorderChapters, reorderLessons } from "@/lib/actions";
 import NewLessonModal from "./lessons/NewLessonModal";
 import NewChapterModal from "./chapters/NewChapterModal";
 import DeleteLesson from "./lessons/DeleteLesson";
+import DeleteChapter from "./chapters/DeleteChapter";
 interface CourseStructureProps {
   data: AdminCourseType;
 }
@@ -304,9 +305,7 @@ export default function CourseStructure({ data }: CourseStructureProps) {
                             {item.title}
                           </p>
                         </div>
-                        <Button size={"icon"} variant={"outline"}>
-                          <Trash2Icon className="size-4" />
-                        </Button>
+                        <DeleteChapter chapterId={item.id} courseId={data.id} />
                       </div>
                       <CollapsibleContent>
                         <div className="p-1">
