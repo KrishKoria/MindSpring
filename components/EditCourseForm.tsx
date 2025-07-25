@@ -176,7 +176,11 @@ export default function EditCourseForm({
               <FormItem className="w-full">
                 <FormLabel>Thumbnail Image</FormLabel>
                 <FormControl>
-                  <FileUploader value={field.value} onChange={field.onChange} />
+                  <FileUploader
+                    value={field.value}
+                    onChange={field.onChange}
+                    fileType="image"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

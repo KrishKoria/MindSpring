@@ -10,11 +10,11 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GetCourse from "@/lib/data/admin/get-course";
 
-type Params = Promise<{ id: string }>;
+type Params = Promise<{ courseId: string }>;
 export default async function EditCourse({ params }: { params: Params }) {
-  const { id } = await params;
+  const { courseId } = await params;
 
-  const course = await GetCourse(id);
+  const course = await GetCourse(courseId);
 
   return (
     <div>

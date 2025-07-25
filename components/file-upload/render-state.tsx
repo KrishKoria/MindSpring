@@ -42,19 +42,25 @@ export function UploadedState({
   previewUrl,
   isDeleting,
   handleRemoveFile,
+  fileType,
 }: {
   previewUrl: string;
   isDeleting: boolean;
   handleRemoveFile: () => void;
+  fileType: "image" | "video";
 }) {
   return (
-    <div className="text-center">
-      <Image
-        src={previewUrl}
-        alt="Uploaded file preview"
-        className="object-contain p-2"
-        fill
-      />
+    <div className="text-center relative group w-full h-full flex items-center justify-center">
+      {fileType === "image" ? (
+        <Image
+          src={previewUrl}
+          alt="Uploaded file preview"
+          className="object-contain p-2"
+          fill
+        />
+      ) : (
+        <video src={previewUrl} className="rounded-md w-full h-full" controls />
+      )}
       <Button
         variant={"destructive"}
         size={"icon"}
