@@ -70,3 +70,18 @@ export const chapterSchema = z.object({
 });
 
 export type ChapterSchemaType = z.infer<typeof chapterSchema>;
+
+export const lessonSchema = z.object({
+  name: z.string().min(3, { error: "Name must be at least 3 characters long" }),
+  courseId: z.uuid({ error: "Invalid Course ID" }),
+  chapterId: z.uuid({ error: "Invalid Chapter ID" }),
+  description: z
+    .string()
+    .min(10, { error: "Description must be at least 10 characters long" })
+    .max(5000, { error: "Description must be at most 5000 characters long" })
+    .optional(),
+  thumbnailKey: z.string().optional(),
+  videoKey: z.string().optional(),
+});
+
+export type LessonSchemaType = z.infer<typeof lessonSchema>;

@@ -5,6 +5,8 @@ import {
   ChapterSchemaType,
   courseSchema,
   CourseSchemaType,
+  lessonSchema,
+  LessonSchemaType,
 } from "./schema";
 import { ApiResponse } from "./types";
 import requireAdmin from "./data/admin/require-admin";
@@ -236,6 +238,58 @@ export async function createChapter(
     return {
       status: "error",
       message: "Failed to create chapter",
+    };
+  }
+}
+
+export async function createLesson(
+  values: LessonSchemaType
+): Promise<ApiResponse> {
+  const session = await requireAdmin();
+  try {
+    const req = await request();
+    const isProtected = await protector.protect(req, {
+      fingerprint: session.user.id,
+    });
+    if (isProtected.isDenied()) {
+      return {
+        status: "error",
+        message: "Request Denied",
+      };
+    }
+    const validation = lessonSchema.safeParse(values);
+    if (!validation.success) {
+      return {
+        status: "error",
+        message: "Invalid Form data",
+      };
+    }
+    await prisma.$transaction(async (tx) => {
+      const maxPos = await tx.lesson.findFirst({
+        where: { chapterId: validation.data.chapterId },
+        orderBy: { position: "desc" },
+        select: { position: true },
+      });
+      await tx.lesson.create({
+        data: {
+          title: validation.data.name,
+          description: validation.data.description,
+          videoKey: validation.data.videoKey,
+          thumbnailKey: validation.data.thumbnailKey,
+          chapterId: validation.data.chapterId,
+          position: (maxPos?.position ?? 0) + 1,
+        },
+      });
+    });
+    revalidatePath(`/admin/courses/${validation.data.courseId}/edit`);
+    return {
+      status: "success",
+      message: "Lesson created successfully",
+    };
+  } catch {
+    return {
+      status: "error",
+      message: "Failed to create lesson",
     };
   }
 }
