@@ -2,7 +2,8 @@
 import { useState, useTransition } from "react";
 
 import { PlusIcon } from "lucide-react";
-import { Form, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { Form } from "../ui/form";
 import { lessonSchema, LessonSchemaType } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 
