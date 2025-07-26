@@ -478,3 +478,38 @@ export async function updateLesson(
     };
   }
 }
+
+export async function deleteCourse(courseId: string): Promise<ApiResponse> {
+  const session = await requireAdmin();
+  try {
+    const req = await request();
+    const isProtected = await protector.protect(req, {
+      fingerprint: session.user.id,
+    });
+    if (isProtected.isDenied()) {
+      return {
+        status: "error",
+        message: "Request Denied",
+      };
+    }
+    if (!courseId) {
+      return {
+        status: "error",
+        message: "Course ID is required",
+      };
+    }
+    await prisma.course.delete({
+      where: { id: courseId },
+    });
+    revalidatePath(`/admin/courses`);
+    return {
+      status: "success",
+      message: "Course deleted successfully",
+    };
+  } catch (error) {
+    return {
+      status: "error",
+      message: "Failed to delete course",
+    };
+  }
+}

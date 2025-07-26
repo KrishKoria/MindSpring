@@ -1,4 +1,5 @@
 import AdminCourseCard from "@/components/AdminCourseCard";
+import EmptyState from "@/components/Empty";
 import { buttonVariants } from "@/components/ui/button";
 import GetCourses from "@/lib/data/admin/get-courses";
 import Link from "next/link";
@@ -20,11 +21,20 @@ export default async function CoursesPage() {
           Create Courses
         </Link>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-7">
-        {data.map((course) => (
-          <AdminCourseCard key={course.id} course={course} />
-        ))}
-      </div>
+      {data.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-7">
+          {data.map((course) => (
+            <AdminCourseCard key={course.id} course={course} />
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          title="No Courses Found"
+          description="Looks like you haven't created any courses yet."
+          buttonText="Create Course"
+          href="/admin/courses/create"
+        />
+      )}
     </>
   );
 }
