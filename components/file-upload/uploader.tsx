@@ -260,7 +260,7 @@ export default function FileUploader({
     accept: fileType === "image" ? { "image/*": [] } : { "video/*": [] },
     maxFiles: 1,
     multiple: false,
-    maxSize: 5 * 1024 * 1024,
+    maxSize: fileType === "image" ? 5 * 1024 * 1024 : 100 * 1024 * 1024,
     onDropRejected: rejectedFiles,
     disabled: fileState.uploading || !!fileState.objectUrl,
   });

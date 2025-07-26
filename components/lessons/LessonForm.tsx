@@ -25,6 +25,10 @@ import {
 import { Input } from "../ui/input";
 import RTEditor from "../RTE/editor";
 import FileUploader from "../file-upload/uploader";
+import { tryCatch } from "@/hooks/try-catch";
+import { updateLesson } from "@/lib/actions";
+import { useTransition } from "react";
+import { toast } from "sonner";
 
 interface LessonFormProps {
   data: LessonType;
@@ -48,6 +52,24 @@ export default function LessonForm({
       videoKey: data.videoKey ?? undefined,
     },
   });
+  const [pending, startTransition] = useTransition();
+
+  const onSubmit = (values: LessonSchemaType) => {
+    startTransition(async () => {
+      const { data: lessonData, error } = await tryCatch(
+        updateLesson(values, data.id)
+      );
+      if (error) {
+        toast.error("Failed to update lesson");
+        return;
+      }
+      if (lessonData.status === "success") {
+        toast.success(lessonData.message);
+      } else if (lessonData.status === "error") {
+        toast.error(lessonData.message);
+      }
+    });
+  };
   return (
     <div>
       <Link
@@ -69,7 +91,7 @@ export default function LessonForm({
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
                 control={form.control}
                 name="name"
@@ -143,7 +165,9 @@ export default function LessonForm({
                   );
                 }}
               />
-              <Button type="submit">Save Lesson</Button>
+              <Button type="submit" disabled={pending}>
+                {pending ? "Saving..." : "Save Lesson"}
+              </Button>
             </form>
           </Form>
         </CardContent>

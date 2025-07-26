@@ -433,3 +433,48 @@ export async function deleteChapter(
     };
   }
 }
+
+export async function updateLesson(
+  values: LessonSchemaType,
+  lessonId: string
+): Promise<ApiResponse> {
+  const session = await requireAdmin();
+  try {
+    const req = await request();
+    const isProtected = await protector.protect(req, {
+      fingerprint: session.user.id,
+    });
+    if (isProtected.isDenied()) {
+      return {
+        status: "error",
+        message: "Request Denied",
+      };
+    }
+    const lesson = lessonSchema.safeParse(values);
+    if (!lesson.success) {
+      return {
+        status: "error",
+        message: "Invalid Form data",
+      };
+    }
+    await prisma.lesson.update({
+      where: { id: lessonId },
+      data: {
+        title: lesson.data.name,
+        description: lesson.data.description,
+        videoKey: lesson.data.videoKey,
+        thumbnailKey: lesson.data.thumbnailKey,
+      },
+    });
+    revalidatePath(`/admin/courses/${lesson.data.courseId}/edit`);
+    return {
+      status: "success",
+      message: "Lesson updated successfully",
+    };
+  } catch (error) {
+    return {
+      status: "error",
+      message: "Failed to update lesson",
+    };
+  }
+}
