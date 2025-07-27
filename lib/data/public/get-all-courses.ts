@@ -24,4 +24,4 @@ export default async function getAllCourses() {
   return data;
 }
 
-export type PublicCourseType = Awaited<ReturnType<typeof getAllCourses>>[0];
+export type PublicCoursesType = Awaited<ReturnType<typeof getAllCourses>>[0];

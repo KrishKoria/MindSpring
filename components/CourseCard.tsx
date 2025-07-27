@@ -1,4 +1,4 @@
-import { PublicCourseType } from "@/lib/data/public/get-all-courses";
+import { PublicCoursesType } from "@/lib/data/public/get-all-courses";
 import { Badge } from "./ui/badge";
 import { Card, CardContent } from "./ui/card";
 import useConstructUrl from "@/hooks/use-construct-url";
@@ -8,7 +8,7 @@ import { ArrowRight, School, TimerIcon } from "lucide-react";
 import { buttonVariants } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 interface CourseCardProps {
-  course: PublicCourseType;
+  course: PublicCoursesType;
 }
 export default function CourseCard({ course }: CourseCardProps) {
   const url = useConstructUrl(course.fileKey);
