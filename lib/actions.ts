@@ -10,24 +10,17 @@ import {
 } from "./schema";
 import { ApiResponse } from "./types";
 import requireAdmin from "./data/admin/require-admin";
-import { aj, detectBot, fixedWindow } from "@/lib/arcjet";
+import { aj, fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";
 
-const protector = aj
-  .withRule(
-    detectBot({
-      mode: "LIVE",
-      allow: [],
-    })
-  )
-  .withRule(
-    fixedWindow({
-      mode: "LIVE",
-      window: "1m",
-      max: 5,
-    })
-  );
+const protector = aj.withRule(
+  fixedWindow({
+    mode: "LIVE",
+    window: "1m",
+    max: 5,
+  })
+);
 export async function createCourse(
   values: CourseSchemaType
 ): Promise<ApiResponse> {
@@ -68,7 +61,7 @@ export async function createCourse(
     };
   }
 }
-export async function EditCourse(
+export async function editCourse(
   id: string,
   values: CourseSchemaType
 ): Promise<ApiResponse> {

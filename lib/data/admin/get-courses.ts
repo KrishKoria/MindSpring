@@ -1,8 +1,8 @@
 import prisma from "@/lib/db";
 import requireAdmin from "./require-admin";
 
-export default async function GetCourses() {
-  const session = await requireAdmin();
+export default async function getCoursesData() {
+  await requireAdmin();
   const courses = await prisma.course.findMany({
     select: {
       id: true,
@@ -22,4 +22,4 @@ export default async function GetCourses() {
   return courses;
 }
 
-export type AdminCoursesType = Awaited<ReturnType<typeof GetCourses>>[0];
+export type AdminCoursesType = Awaited<ReturnType<typeof getCoursesData>>[0];

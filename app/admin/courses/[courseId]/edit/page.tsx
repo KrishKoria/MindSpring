@@ -8,13 +8,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import GetCourse from "@/lib/data/admin/get-course";
+import getCourseData from "@/lib/data/admin/get-course";
 
 type Params = Promise<{ courseId: string }>;
-export default async function EditCourse({ params }: { params: Params }) {
+export default async function EditCoursePage({ params }: { params: Params }) {
   const { courseId } = await params;
 
-  const course = await GetCourse(courseId);
+  const course = await getCourseData(courseId);
 
   return (
     <div>

@@ -34,8 +34,8 @@ import { useTransition } from "react";
 import { tryCatch } from "@/hooks/try-catch";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { EditCourse } from "@/lib/actions";
 import { AdminCourseType } from "@/lib/data/admin/get-course";
+import { editCourse } from "@/lib/actions";
 
 export default function EditCourseForm({
   course,
@@ -62,7 +62,7 @@ export default function EditCourseForm({
   const onSubmit = (data: CourseSchemaType) => {
     startTransition(async () => {
       const { data: courseData, error } = await tryCatch(
-        EditCourse(course.id, data)
+        editCourse(course.id, data)
       );
       if (error) {
         toast.error("Failed to Edit course");

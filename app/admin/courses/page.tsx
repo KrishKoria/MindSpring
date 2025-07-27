@@ -3,7 +3,7 @@ import AdminCourseCard, {
 } from "@/components/AdminCourseCard";
 import EmptyState from "@/components/Empty";
 import { buttonVariants } from "@/components/ui/button";
-import GetCourses from "@/lib/data/admin/get-courses";
+import getCoursesData from "@/lib/data/admin/get-courses";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -24,7 +24,7 @@ export default async function CoursesPage() {
 }
 
 async function RenderCourses() {
-  const data = await GetCourses();
+  const data = await getCoursesData();
   if (!data) {
     return (
       <div className="flex items-center justify-center h-full">
