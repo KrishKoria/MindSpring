@@ -1,10 +1,29 @@
-import AdminCourseCard from "@/components/AdminCourseCard";
+import AdminCourseCard, {
+  AdminCourseCardSkeleton,
+} from "@/components/AdminCourseCard";
 import EmptyState from "@/components/Empty";
 import { buttonVariants } from "@/components/ui/button";
 import GetCourses from "@/lib/data/admin/get-courses";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export default async function CoursesPage() {
+  return (
+    <>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Your Courses</h1>
+        <Link href={"/admin/courses/create"} className={buttonVariants()}>
+          Create Courses
+        </Link>
+      </div>
+      <Suspense fallback={<RenderCoursesSkeleton />}>
+        <RenderCourses />
+      </Suspense>
+    </>
+  );
+}
+
+async function RenderCourses() {
   const data = await GetCourses();
   if (!data) {
     return (
@@ -15,12 +34,6 @@ export default async function CoursesPage() {
   }
   return (
     <>
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Your Courses</h1>
-        <Link href={"/admin/courses/create"} className={buttonVariants()}>
-          Create Courses
-        </Link>
-      </div>
       {data.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-7">
           {data.map((course) => (
@@ -36,5 +49,15 @@ export default async function CoursesPage() {
         />
       )}
     </>
+  );
+}
+
+function RenderCoursesSkeleton() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-7">
+      {Array.from({ length: 4 }).map((_, index) => (
+        <AdminCourseCardSkeleton key={index} />
+      ))}
+    </div>
   );
 }

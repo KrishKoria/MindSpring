@@ -20,6 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { Skeleton } from "./ui/skeleton";
 
 export default function AdminCourseCard({
   course,
@@ -95,6 +96,35 @@ export default function AdminCourseCard({
         >
           Edit Course <ArrowRight className="size-4" />
         </Link>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function AdminCourseCardSkeleton() {
+  return (
+    <Card className="group relative py-0 gap-0">
+      <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
+        <Skeleton className="w-16 h-6 rounded-full" />
+        <Skeleton className="size-8 rounded-md" />
+      </div>
+      <div className="w-full relative h-fit">
+        <Skeleton className="w-full h-[250px] object-cover rounded-t-lg aspect-video" />
+      </div>
+      <CardContent className="p-4">
+        <Skeleton className="w-3/4 h-6 mb-2 rounded" />
+        <Skeleton className="w-full h-4 mb-4 rounded" />
+        <div className="mt-4 flex items-center gap-x-5">
+          <div className="flex items-center gap-x-2">
+            <Skeleton className="size-6 rounded-md" />
+            <Skeleton className="w-10 h-4 rounded" />
+          </div>
+          <div className="flex items-center gap-x-2">
+            <Skeleton className="size-6 rounded-md" />
+            <Skeleton className="w-16 h-4 rounded" />
+          </div>
+        </div>
+        <Skeleton className="w-full h-10 mt-4 rounded" />
       </CardContent>
     </Card>
   );
