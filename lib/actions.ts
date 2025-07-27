@@ -28,7 +28,7 @@ const protector = aj
       max: 5,
     })
   );
-export async function CreateCourse(
+export async function createCourse(
   values: CourseSchemaType
 ): Promise<ApiResponse> {
   const session = await requireAdmin();
@@ -61,7 +61,7 @@ export async function CreateCourse(
       status: "success",
       message: "Course created successfully",
     };
-  } catch {
+  } catch (error) {
     return {
       status: "error",
       message: "Failed to create course",

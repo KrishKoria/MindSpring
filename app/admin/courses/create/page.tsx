@@ -39,13 +39,15 @@ import RTEditor from "@/components/RTE/editor";
 import FileUploader from "@/components/file-upload/uploader";
 import { useTransition } from "react";
 import { tryCatch } from "@/hooks/try-catch";
-import { CreateCourse } from "@/lib/actions";
+import { createCourse } from "@/lib/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import useCelebration from "@/hooks/use-celebration";
 export default function CreateCoursePage() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const { triggerConfetti } = useCelebration();
   const form = useForm<CourseSchemaType>({
     resolver: zodResolver(courseSchema),
     defaultValues: {
@@ -63,13 +65,14 @@ export default function CreateCoursePage() {
   });
   const onSubmit = (data: CourseSchemaType) => {
     startTransition(async () => {
-      const { data: courseData, error } = await tryCatch(CreateCourse(data));
+      const { data: courseData, error } = await tryCatch(createCourse(data));
       if (error) {
         toast.error("Failed to create course");
         return;
       }
       if (courseData.status === "success") {
         toast.success(courseData.message);
+        triggerConfetti();
         form.reset();
         router.push("/admin/courses");
       } else if (courseData.status === "error") {
