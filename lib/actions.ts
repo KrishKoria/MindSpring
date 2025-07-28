@@ -13,6 +13,11 @@ import requireAdmin from "./data/admin/require-admin";
 import { aj, fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";
+import requireUser from "./data/user/require-user";
+import { stripe } from "./stripe";
+import Stripe from "stripe";
+import { redirect } from "next/navigation";
+import { env } from "./env";
 
 const protector = aj.withRule(
   fixedWindow({
@@ -505,4 +510,134 @@ export async function deleteCourse(courseId: string): Promise<ApiResponse> {
       message: "Failed to delete course",
     };
   }
+}
+
+export async function courseEnrollment(
+  courseId: string
+): Promise<ApiResponse | never> {
+  const user = await requireUser();
+  let checkoutURL: string;
+  try {
+    const req = await request();
+    const isProtected = await protector.protect(req, {
+      fingerprint: user.id,
+    });
+    if (isProtected.isDenied()) {
+      return {
+        status: "error",
+        message: "Request Denied",
+      };
+    }
+    if (!courseId) {
+      return {
+        status: "error",
+        message: "Course ID is required",
+      };
+    }
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      select: { id: true, title: true, price: true, slug: true },
+    });
+    if (!course) {
+      return {
+        status: "error",
+        message: "Course not found",
+      };
+    }
+    const userStripeID = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { stripeCustomerId: true },
+    });
+    let stripeCustomerId = userStripeID?.stripeCustomerId;
+    if (!stripeCustomerId) {
+      const customer = await stripe.customers.create({
+        email: user.email,
+        name: user.name,
+        metadata: {
+          userId: user.id,
+        },
+      });
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { stripeCustomerId: customer.id },
+      });
+      stripeCustomerId = customer.id;
+    }
+    const result = await prisma.$transaction(async (tx) => {
+      const existingEnrollment = await tx.enrollment.findUnique({
+        where: {
+          userId_courseId: {
+            userId: user.id,
+            courseId: course.id,
+          },
+        },
+        select: {
+          status: true,
+          id: true,
+        },
+      });
+      if (existingEnrollment?.status === "APPROVED") {
+        return {
+          status: "success",
+          message: "You are already enrolled in this course",
+        };
+      }
+      let enrollment;
+      if (existingEnrollment) {
+        enrollment = await tx.enrollment.update({
+          where: {
+            id: existingEnrollment.id,
+          },
+          data: {
+            amount: course.price,
+            status: "PENDING",
+            updatedAt: new Date(),
+          },
+        });
+      } else {
+        enrollment = await tx.enrollment.create({
+          data: {
+            userId: user.id,
+            courseId: course.id,
+            amount: course.price,
+            status: "PENDING",
+          },
+        });
+      }
+      const session = await stripe.checkout.sessions.create({
+        customer: stripeCustomerId,
+        line_items: [
+          {
+            price: "price_1Rpl3yFyazyApOXvaGNOlzhc",
+            quantity: 1,
+          },
+        ],
+        mode: "payment",
+        success_url: `${env.BETTER_AUTH_URL}/payment/success`,
+        cancel_url: `${env.BETTER_AUTH_URL}/payment/cancel`,
+        metadata: {
+          userId: user.id,
+          courseId: course.id,
+          enrollmentId: enrollment.id,
+        },
+      });
+      return {
+        enrollment: enrollment,
+        checkoutURL: session.url,
+      };
+    });
+    checkoutURL = result.checkoutURL!;
+  } catch (error) {
+    if (error instanceof Stripe.errors.StripeError) {
+      return {
+        status: "error",
+        message: "Payment processing error: " + error.message,
+      };
+    }
+    return {
+      status: "error",
+      message: "Failed to enroll in course",
+    };
+  }
+  redirect(checkoutURL);
 }

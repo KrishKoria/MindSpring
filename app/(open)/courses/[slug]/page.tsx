@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
 import useConstructUrl from "@/hooks/use-construct-url";
+import { courseEnrollment } from "@/lib/actions";
 import getCourse from "@/lib/data/public/get-course";
 import {
   IconBook,
@@ -270,9 +271,16 @@ export default async function CoursePage({ params }: { params: Params }) {
                   </li>
                 </ul>
               </div>
-              <Button variant="outline" className="w-full">
-                Enroll Now!
-              </Button>
+              <form
+                action={async () => {
+                  "use server";
+                  await courseEnrollment(course.id);
+                }}
+              >
+                <Button variant="outline" className="w-full">
+                  Enroll Now!
+                </Button>
+              </form>
               <p className="mt-3 text-center text-xs text-muted-foreground">
                 Join our community of learners and start your journey today!{" "}
                 <br />

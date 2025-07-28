@@ -15,11 +15,15 @@ export const env = createEnv({
     AWS_ENDPOINT_URL_S3: z.string().min(1),
     AWS_ENDPOINT_URL_IAM: z.string().min(1),
     AWS_REGION: z.string().min(1),
+    STRIPE_SECRET_KEY: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_S3_BUCKET_NAME: z.string().min(1),
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_S3_BUCKET_NAME: process.env.NEXT_PUBLIC_S3_BUCKET_NAME,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   },
 });

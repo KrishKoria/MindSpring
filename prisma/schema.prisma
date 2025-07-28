@@ -21,7 +21,7 @@ model Test {
 }
 
 model User {
-  id            String    @id
+  id            String       @id
   name          String
   email         String
   emailVerified Boolean
@@ -31,7 +31,8 @@ model User {
   sessions      Session[]
   accounts      Account[]
   courses       Course[]
-
+  enrollments   Enrollment[]
+  stripeCustomerId String? @unique
   role       String?
   banned     Boolean?
   banReason  String?
@@ -117,7 +118,8 @@ model Course {
   User             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId           String
 
-  chapters Chapter[]
+  chapters   Chapter[]
+  enrollment Enrollment[]
 
   @@map("course")
 }
@@ -142,6 +144,28 @@ model Lesson {
   videoKey     String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  Chapter      Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  Chapter      Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
   chapterId    String
+}
+
+enum EnrollmentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Enrollment {
+  id     String @id @default(uuid())
+  amount Int
+  status EnrollmentStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId  String
+  User      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  @@map("enrollment")
+  @@unique([userId, courseId])
 }
