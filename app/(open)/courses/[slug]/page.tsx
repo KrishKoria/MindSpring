@@ -1,6 +1,7 @@
+import EnrollmentButton from "@/components/EnrollmentButton";
 import RenderRT from "@/components/RTE/render";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Collapsible,
@@ -9,8 +10,8 @@ import {
 } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
 import useConstructUrl from "@/hooks/use-construct-url";
-import { courseEnrollment } from "@/lib/actions";
 import getCourse from "@/lib/data/public/get-course";
+import { getUserEnrollment } from "@/lib/data/user/get-enrollment";
 import {
   IconBook,
   IconCategory,
@@ -21,12 +22,14 @@ import {
 } from "@tabler/icons-react";
 import { CheckIcon } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 type Params = Promise<{ slug: string }>;
 export default async function CoursePage({ params }: { params: Params }) {
   const { slug } = await params;
   const course = await getCourse(slug);
   const url = useConstructUrl(course.fileKey);
+  const isEnrolled = await getUserEnrollment(course.id);
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 mt-5">
       <div className="order-1 lg:col-span-2">
@@ -271,16 +274,19 @@ export default async function CoursePage({ params }: { params: Params }) {
                   </li>
                 </ul>
               </div>
-              <form
-                action={async () => {
-                  "use server";
-                  await courseEnrollment(course.id);
-                }}
-              >
-                <Button variant="outline" className="w-full">
-                  Enroll Now!
-                </Button>
-              </form>
+              {isEnrolled ? (
+                <Link
+                  href={`/dashboard`}
+                  className={buttonVariants({
+                    variant: "outline",
+                    className: "w-full",
+                  })}
+                >
+                  Get Started
+                </Link>
+              ) : (
+                <EnrollmentButton courseId={course.id} />
+              )}
               <p className="mt-3 text-center text-xs text-muted-foreground">
                 Join our community of learners and start your journey today!{" "}
                 <br />
