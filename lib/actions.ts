@@ -48,10 +48,19 @@ export async function createCourse(
         message: "Invalid Form data",
       };
     }
+    const data = await stripe.products.create({
+      name: validation.data.title,
+      description: validation.data.description,
+      default_price_data: {
+        currency: "inr",
+        unit_amount: validation.data.price * 100,
+      },
+    });
     await prisma.course.create({
       data: {
         ...validation.data,
         userId: session?.user.id!,
+        stripePriceId: data.default_price as string,
       },
     });
 

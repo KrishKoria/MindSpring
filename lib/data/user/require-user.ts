@@ -1,8 +1,9 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 
-export default async function requireUser() {
+const requireUser = cache(async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -10,4 +11,6 @@ export default async function requireUser() {
     return redirect("/login");
   }
   return session.user;
-}
+});
+
+export default requireUser;
