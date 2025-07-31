@@ -2,6 +2,7 @@ import CourseCard from "@/components/CourseCard";
 import EmptyState from "@/components/Empty";
 import getAllCourses from "@/lib/data/public/get-all-courses";
 import getEnrolledCourses from "@/lib/data/user/get-enrolled";
+import Link from "next/link";
 
 export default async function DashboardPage() {
   const [allCourses, enrolledCourses] = await Promise.all([
@@ -26,7 +27,12 @@ export default async function DashboardPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {enrolledCourses.map((course) => (
-            <CourseCard key={course.Course.id} course={course.Course} />
+            <Link
+              href={`/dashboard/${course.Course.slug}`}
+              key={course.Course.id}
+            >
+              {course.Course.title}
+            </Link>
           ))}
         </div>
       )}
