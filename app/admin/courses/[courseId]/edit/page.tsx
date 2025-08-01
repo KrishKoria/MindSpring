@@ -1,5 +1,5 @@
-import CourseStructure from "@/components/CourseStructure";
-import EditCourseForm from "@/components/EditCourseForm";
+import CourseStructure from "@/components/course/CourseStructure";
+import EditCourseForm from "@/components/course/EditCourseForm";
 import {
   Card,
   CardContent,

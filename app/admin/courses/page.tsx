@@ -1,6 +1,6 @@
 import AdminCourseCard, {
   AdminCourseCardSkeleton,
-} from "@/components/AdminCourseCard";
+} from "@/components/course/AdminCourseCard";
 import EmptyState from "@/components/Empty";
 import { buttonVariants } from "@/components/ui/button";
 import getCoursesData from "@/lib/data/admin/get-courses";

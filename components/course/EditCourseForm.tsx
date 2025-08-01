@@ -7,20 +7,20 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { Input } from "./ui/input";
+} from "../ui/form";
+import { Input } from "../ui/input";
 import slugify from "slugify";
-import { Button } from "./ui/button";
-import { Textarea } from "./ui/textarea";
-import RTEditor from "./RTE/editor";
-import FileUploader from "./file-upload/uploader";
+import { Button } from "../ui/button";
+import { Textarea } from "../ui/textarea";
+import RTEditor from "../RTE/editor";
+import FileUploader from "../file-upload/uploader";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "../ui/select";
 import {
   courseCategories,
   courseLevel,

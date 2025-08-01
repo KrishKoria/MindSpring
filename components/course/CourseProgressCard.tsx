@@ -1,15 +1,15 @@
 "use client";
-import { Badge } from "./ui/badge";
-import { Card, CardContent } from "./ui/card";
+import { Badge } from "../ui/badge";
+import { Card, CardContent } from "../ui/card";
 import useConstructUrl from "@/hooks/use-construct-url";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { buttonVariants } from "./ui/button";
-import { Skeleton } from "./ui/skeleton";
+import { buttonVariants } from "../ui/button";
+import { Skeleton } from "../ui/skeleton";
 import { EnrolledCourseType } from "@/lib/data/user/get-enrolled";
 import { useCourseProgress } from "@/hooks/use-course-progress";
-import { Progress } from "./ui/progress";
+import { Progress } from "../ui/progress";
 interface CourseCardProps {
   course: EnrolledCourseType;
 }

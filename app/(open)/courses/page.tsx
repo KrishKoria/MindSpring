@@ -1,4 +1,4 @@
-import CourseCard, { CourseCardSkeleton } from "@/components/CourseCard";
+import CourseCard, { CourseCardSkeleton } from "@/components/course/CourseCard";
 import getAllCourses from "@/lib/data/public/get-all-courses";
 import { Suspense } from "react";
 

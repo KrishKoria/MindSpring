@@ -1,6 +1,6 @@
 import AdminCourseCard, {
   AdminCourseCardSkeleton,
-} from "@/components/AdminCourseCard";
+} from "@/components/course/AdminCourseCard";
 import EmptyState from "@/components/Empty";
 import { ChartAreaInteractive } from "@/components/sidebar/chart-area-interactive";
 import { SectionCards } from "@/components/sidebar/section-cards";

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Card, CardContent } from "./ui/card";
+import { Card, CardContent } from "../ui/card";
 import { AdminCoursesType } from "@/lib/data/admin/get-courses";
 import useConstructUrl from "@/hooks/use-construct-url";
 import Link from "next/link";
@@ -12,15 +12,15 @@ import {
   TimerIcon,
   Trash2Icon,
 } from "lucide-react";
-import { Button, buttonVariants } from "./ui/button";
+import { Button, buttonVariants } from "../ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Skeleton } from "./ui/skeleton";
+} from "../ui/dropdown-menu";
+import { Skeleton } from "../ui/skeleton";
 
 export default function AdminCourseCard({
   course,

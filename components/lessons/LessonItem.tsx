@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { buttonVariants } from "./ui/button";
+import { buttonVariants } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { Check, Play } from "lucide-react";
 

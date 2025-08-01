@@ -39,7 +39,7 @@ export const POST = async (req: Request) => {
         { status: 400 }
       );
     }
-    const { fileName, contentType, size, isImage } = validation.data;
+    const { fileName, contentType, size } = validation.data;
     const uniqueKey = uuidv4() + "-" + fileName;
     const command = new PutObjectCommand({
       Bucket: env.NEXT_PUBLIC_S3_BUCKET_NAME,
@@ -55,7 +55,7 @@ export const POST = async (req: Request) => {
       uniqueKey,
     };
     return NextResponse.json(response, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Something Went Wrong" },
       { status: 500 }

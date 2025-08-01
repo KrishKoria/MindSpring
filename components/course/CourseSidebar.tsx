@@ -1,14 +1,14 @@
 "use client";
 import { SidebarCourseType } from "@/lib/data/public/get-sidebar-course";
 import { ChevronDown, Play } from "lucide-react";
-import { Progress } from "./ui/progress";
+import { Progress } from "../ui/progress";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "./ui/collapsible";
-import { Button } from "./ui/button";
-import LessonItem from "./LessonItem";
+} from "../ui/collapsible";
+import { Button } from "../ui/button";
+import LessonItem from "../lessons/LessonItem";
 import { usePathname } from "next/navigation";
 import { useCourseProgress } from "@/hooks/use-course-progress";
 

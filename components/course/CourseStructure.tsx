@@ -9,7 +9,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
   arrayMove,
   SortableContext,
@@ -25,7 +25,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "./ui/collapsible";
+} from "../ui/collapsible";
 import {
   ChevronDownIcon,
   ChevronRightIcon,
@@ -33,14 +33,14 @@ import {
   GripVerticalIcon,
   Trash2Icon,
 } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import Link from "next/link";
 import { toast } from "sonner";
 import { reorderChapters, reorderLessons } from "@/lib/actions";
-import NewLessonModal from "./lessons/NewLessonModal";
-import NewChapterModal from "./chapters/NewChapterModal";
-import DeleteLesson from "./lessons/DeleteLesson";
-import DeleteChapter from "./chapters/DeleteChapter";
+import NewLessonModal from "../lessons/NewLessonModal";
+import NewChapterModal from "../chapters/NewChapterModal";
+import DeleteLesson from "../lessons/DeleteLesson";
+import DeleteChapter from "../chapters/DeleteChapter";
 interface CourseStructureProps {
   data: AdminCourseType;
 }

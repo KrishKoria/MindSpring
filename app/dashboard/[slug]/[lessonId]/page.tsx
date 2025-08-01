@@ -1,4 +1,4 @@
-import LessonSkeleton from "@/components/LessonSkeleton";
+import LessonSkeleton from "@/components/lessons/LessonSkeleton";
 import { getLessonContent } from "@/lib/data/public/get-lesson-content";
 import LessonContent from "@/lib/LessonContent";
 import { Suspense } from "react";

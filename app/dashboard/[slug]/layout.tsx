@@ -1,4 +1,4 @@
-import CourseSidebar from "@/components/CourseSidebar";
+import CourseSidebar from "@/components/course/CourseSidebar";
 import { getSidebarCourse } from "@/lib/data/public/get-sidebar-course";
 
 interface DashboardCourseLayoutProps {
