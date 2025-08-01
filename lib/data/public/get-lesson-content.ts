@@ -1,3 +1,4 @@
+import { LessonProgress } from "./../../generated/prisma/index.d";
 import prisma from "@/lib/db";
 import requireUser from "../user/require-user";
 import { notFound } from "next/navigation";
@@ -13,11 +14,25 @@ export async function getLessonContent(lessonId: string) {
       thumbnailKey: true,
       videoKey: true,
       position: true,
+      progress: {
+        where: {
+          userId: session.id,
+        },
+        select: {
+          completed: true,
+          lessonId: true,
+        },
+      },
       Chapter: {
         select: {
           id: true,
           title: true,
           courseId: true,
+          Course: {
+            select: {
+              slug: true,
+            },
+          },
         },
       },
     },

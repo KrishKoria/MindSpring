@@ -15,22 +15,23 @@ datasource db {
 }
 
 model User {
-  id            String       @id
-  name          String
-  email         String
-  emailVerified Boolean
-  image         String?
-  createdAt     DateTime
-  updatedAt     DateTime
-  sessions      Session[]
-  accounts      Account[]
-  courses       Course[]
-  enrollments   Enrollment[]
-  stripeCustomerId String? @unique
-  role       String?
-  banned     Boolean?
-  banReason  String?
-  banExpires DateTime?
+  id               String           @id
+  name             String
+  email            String
+  emailVerified    Boolean
+  image            String?
+  createdAt        DateTime
+  updatedAt        DateTime
+  sessions         Session[]
+  accounts         Account[]
+  courses          Course[]
+  enrollments      Enrollment[]
+  stripeCustomerId String?          @unique
+  role             String?
+  banned           Boolean?
+  banReason        String?
+  banExpires       DateTime?
+  lessonProgress   LessonProgress[]
 
   @@unique([email])
   @@map("user")
@@ -97,7 +98,7 @@ enum CourseStatus {
 
 model Course {
   id               String       @id @default(uuid())
-  stripePriceId    String @unique
+  stripePriceId    String       @unique
   title            String
   smallDescription String
   description      String
@@ -131,16 +132,17 @@ model Chapter {
 }
 
 model Lesson {
-  id           String   @id @default(uuid())
+  id           String           @id @default(uuid())
   title        String
   description  String?
   position     Int
   thumbnailKey String?
   videoKey     String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  Chapter      Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  Chapter      Chapter          @relation(fields: [chapterId], references: [id], onDelete: Cascade)
   chapterId    String
+  progress     LessonProgress[]
 }
 
 enum EnrollmentStatus {
@@ -150,7 +152,7 @@ enum EnrollmentStatus {
 }
 
 model Enrollment {
-  id     String @id @default(uuid())
+  id     String           @id @default(uuid())
   amount Int
   status EnrollmentStatus @default(PENDING)
 
@@ -158,9 +160,22 @@ model Enrollment {
   updatedAt DateTime @updatedAt
   Course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId  String
-  User      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
 
-  @@map("enrollment")
   @@unique([userId, courseId])
+  @@map("enrollment")
+}
+
+model LessonProgress {
+  id        String   @id @default(uuid())
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  Lesson    Lesson  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId  String
+
+  @@unique([userId, lessonId])
 }

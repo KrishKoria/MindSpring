@@ -1,10 +1,35 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { LessonContentType } from "./data/public/get-lesson-content";
 import { BookIcon, CheckCircle } from "lucide-react";
-import RenderRT from "@/components/RTE/render";
 import useConstructUrl from "@/hooks/use-construct-url";
+import { useTransition } from "react";
+import { tryCatch } from "@/hooks/try-catch";
+import { markCompletion } from "./actions";
+import { toast } from "sonner";
+import useCelebration from "@/hooks/use-celebration";
+import RenderRTClient from "@/components/RTE/RenderRTClient";
 
 export default function LessonContent({ data }: { data: LessonContentType }) {
+  const [pending, startTransition] = useTransition();
+  const { triggerConfetti } = useCelebration();
+  const handleCompletion = () => {
+    startTransition(async () => {
+      const { data: result, error } = await tryCatch(
+        markCompletion(data.id, data.Chapter.Course.slug)
+      );
+      if (error) {
+        toast.error("Failed to mark lesson as complete");
+        return;
+      }
+      if (result.status === "success") {
+        toast.success(result.message);
+        triggerConfetti();
+      } else {
+        toast.error(result.message);
+      }
+    });
+  };
   return (
     <div className="flex flex-col h-full bg-background pl-6">
       <VideoPlayer
@@ -12,17 +37,31 @@ export default function LessonContent({ data }: { data: LessonContentType }) {
         videoKey={data.videoKey ?? ""}
       />
       <div className="py-4 border-b">
-        <Button variant="outline">
-          <CheckCircle className="size-4 mr-2 text-green-500" />
-          Mark as Complete
-        </Button>
+        {data.progress.length > 0 ? (
+          <Button
+            variant="outline"
+            className="bg-green-500/20 text-green-500 hover:text-green-600"
+          >
+            <CheckCircle className="size-4 mr-2 text-green-500" />
+            Completed
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            onClick={handleCompletion}
+            disabled={pending}
+          >
+            <CheckCircle className="size-4 mr-2 text-green-500" />
+            Mark as Complete
+          </Button>
+        )}
       </div>
       <div className="space-y-3 pt-3">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
           {data.title}
         </h1>
         {data.description && (
-          <RenderRT content={JSON.parse(data.description)} />
+          <RenderRTClient content={JSON.parse(data.description)} />
         )}
       </div>
     </div>

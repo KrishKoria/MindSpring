@@ -650,3 +650,38 @@ export async function courseEnrollment(
   }
   redirect(checkoutURL);
 }
+
+export async function markCompletion(
+  lessonId: string,
+  slug: string
+): Promise<ApiResponse> {
+  const user = await requireUser();
+  try {
+    await prisma.lessonProgress.upsert({
+      where: {
+        userId_lessonId: {
+          userId: user.id,
+          lessonId: lessonId,
+        },
+      },
+      create: {
+        userId: user.id,
+        lessonId: lessonId,
+        completed: true,
+      },
+      update: {
+        completed: true,
+      },
+    });
+    revalidatePath(`/courses/${slug}/${lessonId}`);
+    return {
+      status: "success",
+      message: "Progress updated successfully",
+    };
+  } catch (error) {
+    return {
+      status: "error",
+      message: "Failed to mark lesson as completed",
+    };
+  }
+}
