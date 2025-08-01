@@ -11,6 +11,7 @@ interface LessonItemProps {
     description: string | null;
   };
   slug: string;
+  isActive?: boolean;
 }
 export default function LessonItem({ lesson, slug }: LessonItemProps) {
   const completed = true;

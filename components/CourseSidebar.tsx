@@ -15,7 +15,7 @@ interface CourseSidebarProps {
 
 export default function CourseSidebar({ course }: CourseSidebarProps) {
   return (
-    <div className="flex flex-col h-full p-6 gap-8">
+    <div className="flex flex-col h-full p-2 gap-8">
       <div className="pb-6 pr-6 border-b border-border">
         <div className="flex items-center gap-5 mb-6">
           <div className="size-5 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
